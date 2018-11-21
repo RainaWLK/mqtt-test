@@ -1,0 +1,15 @@
+version: "3"
+services:
+  start:
+    build: .
+    container_name: "mosquitto"
+    #user: ""
+    working_dir: /usr/src
+    environment:
+      - LD_LIBRARY_PATH=/usr/src/lib/
+    volumes:
+      - ./mosquitto-1.5.4/:/usr/src/
+    #ports:
+    #  - "9000:9000"
+    command: "./test.sh"
+

@@ -307,6 +307,8 @@ static void formatted_print(const struct mosq_config *cfg, const struct mosquitt
 
 void print_message(struct mosq_config *cfg, const struct mosquitto_message *message)
 {
+	//sub_action(cfg, message);
+
 	if(cfg->format){
 		formatted_print(cfg, message);
 	}else if(cfg->verbose){

@@ -1,0 +1,6 @@
+*.o
+mosquitto_sub
+mosquitto_pub
+mosquitto
+mosquitto_passwd
+*.so*
