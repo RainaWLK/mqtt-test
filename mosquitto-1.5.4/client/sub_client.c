@@ -76,6 +76,7 @@ void my_message_callback(struct mosquitto *mosq, void *obj, const struct mosquit
 		}
 	}
 
+	sub_action(mosq, cfg, message);
 	print_message(cfg, message);
 
 	if(cfg->msg_count>0){
@@ -98,6 +99,8 @@ void my_connect_callback(struct mosquitto *mosq, void *obj, int result, int flag
 	if(!result){
 		for(i=0; i<cfg->topic_count; i++){
 			mosquitto_subscribe(mosq, NULL, cfg->topics[i], cfg->qos);
+
+			sub_connect_action(mosq, cfg);
 		}
 		for(i=0; i<cfg->unsub_topic_count; i++){
 			mosquitto_unsubscribe(mosq, NULL, cfg->unsub_topics[i]);
@@ -108,6 +111,8 @@ void my_connect_callback(struct mosquitto *mosq, void *obj, int result, int flag
 		}
 		mosquitto_disconnect(mosq);
 	}
+
+	
 }
 
 void my_subscribe_callback(struct mosquitto *mosq, void *obj, int mid, int qos_count, const int *granted_qos)

@@ -101,4 +101,5 @@ int client_connect(struct mosquitto *mosq, struct mosq_config *cfg);
 
 #endif
 
-void sub_action(struct mosq_config *cfg, const struct mosquitto_message *message);
+void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mosquitto_message *message);
+void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg);
