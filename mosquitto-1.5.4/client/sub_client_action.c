@@ -23,6 +23,52 @@
 #include <mosquitto.h>
 #include "client_shared.h"
 
+#define PAYLOAD_SIZE 384
+
+
+void getProperties(char *resp, struct json_object *j_task_id, struct mosq_config *cfg) {
+  //printf("\nget /system/properties (%d)\n", ++sp_count);
+
+	//XXX device name and MAC
+  char dev_name[24];
+  char dev_mac[24];
+  int dev_gps_lat=0, dev_gps_lng=0;
+	snprintf(dev_name, 24, "%s-%s", "UC-8112-LX", cfg->psk+58);
+	snprintf(dev_mac, 24, "%s:%c%c:%c%c", "00:90:E8",
+			cfg->psk[60], cfg->psk[61], cfg->psk[62], cfg->psk[63]);
+
+	dev_gps_lat = -80 + (int)strtol(cfg->psk+58, NULL, 16)/361;
+	dev_gps_lng = -180 + (int)strtol(cfg->psk+58, NULL, 16)%361;
+
+
+  snprintf(resp, PAYLOAD_SIZE, 
+    "{ \"code\": 200, \"resource\": \"/system/properties\", \"task_id\": \"%s\", \"id\": 190760, \"sign\": [ \"status\" ], \"data\": { \"aliasName\": \"%s\", \"gps\": { \"lat\": %d, \"lng\": %d } }, \"method\": \"get\" }",
+    json_object_get_string(j_task_id),
+    dev_name,
+    dev_gps_lat,
+    dev_gps_lng);
+
+  return;
+}
+
+void getImport(char *resp, struct json_object *j_task_id) {
+	snprintf(resp, PAYLOAD_SIZE,
+    "{ \"code\": 200, \"resource\": \"/system/import\", \"task_id\": \"%s\", \"method\": \"put\", \"sign\": [ \"import-export\" ], \"data\": {}, \"id\": 190760 }",
+		json_object_get_string(j_task_id));
+
+  return;
+}
+
+void getSerial(char *resp, struct json_object *j_task_id) {
+	snprintf(resp, PAYLOAD_SIZE,
+    "{ \"code\": 200, \"resource\": \"/system/serial\", \"task_id\": \"%s\", \"id\": 190760, \"sign\": [ \"serial\" ], \"data\": [ { \"devDisplayName\": \"PORT 1\", \"id\": 1, \"dev\": \"/dev/ttyM0\", \"mode\": \"rs232\" } ], \"method\": \"get\" }",
+		json_object_get_string(j_task_id));
+  return;
+}
+
+void getFirmware(char *resp, struct json_object *j_task_id) {
+
+}
 
 
 void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mosquitto_message *message) {
@@ -33,34 +79,31 @@ void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mo
 	printf("\n");
 	fflush(stdout);
 
-  char resp[384];
-  char dev_name[24];
+  char *resp = calloc(PAYLOAD_SIZE, sizeof(char));
+  //char dev_name[24];
   //char dev_mac[24];
-  int dev_gps_lat, dev_gps_lng;
+  //int dev_gps_lat, dev_gps_lng;
 
 	int mid_sent = 0;
 	struct json_object *j_root, *j_resource, *j_task_id;
 	struct json_object *j_data, *j_file, *j_url, *j_headers, *j_token;
-	static int sp_count = 0;	// counter of /system/properties
+	//static int sp_count = 0;	// counter of /system/properties
 
   j_root = json_tokener_parse(message->payload);
 	json_object_object_get_ex(j_root, "task_id", &j_task_id);
 	json_object_object_get_ex(j_root, "resource", &j_resource);
 
-	if( strcmp(json_object_get_string(j_resource), "/system/properties") == 0 )
+  const char *resource = json_object_get_string(j_resource);
+
+	if( strcmp(resource, "/system/properties") == 0 )
 	{
-		printf("\nget /system/properties (%d)\n", ++sp_count);
-		snprintf(resp, 384, "{ \"code\": 200, \"resource\": \"/system/properties\", \"task_id\": \"%s\", \"id\": 190760, \"sign\": [ \"status\" ], \"data\": { \"aliasName\": \"%s\", \"gps\": { \"lat\": %d, \"lng\": %d } }, \"method\": \"get\" }",
-			json_object_get_string(j_task_id),
-			dev_name,
-			dev_gps_lat, dev_gps_lng);
+    getProperties(resp, j_task_id, cfg);
 	}
-	else if( strcmp(json_object_get_string(j_resource), "/system/import") == 0 )
+	else if( strcmp(resource, "/system/import") == 0 )
 	{
-		snprintf(resp, 384, "{ \"code\": 200, \"resource\": \"/system/import\", \"task_id\": \"%s\", \"method\": \"put\", \"sign\": [ \"import-export\" ], \"data\": {}, \"id\": 190760 }",
-			json_object_get_string(j_task_id));
+    getImport(resp, j_task_id);
 	}
-	else if( strcmp(json_object_get_string(j_resource), "/system/firmware") == 0 )
+	else if( strcmp(resource, "/system/firmware") == 0 )
 	{
 		//char token[64] = {0};
 		//char url[80] = {0};
@@ -80,48 +123,53 @@ void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mo
 		snprintf(resp, 384, "{ \"code\": 200, \"resource\": \"/system/firmware\", \"task_id\": \"%s\", \"id\": 190760, \"sign\": [ \"firmware\" ], \"data\": {}, \"method\": \"post\" }",
 			json_object_get_string(j_task_id));*/
 	}
-	else if( strcmp(json_object_get_string(j_resource), "/system/serial") == 0 )
+	else if( strcmp(resource, "/system/serial") == 0 )
 	{
-		snprintf(resp, 384, "{ \"code\": 200, \"resource\": \"/system/serial\", \"task_id\": \"%s\", \"id\": 190760, \"sign\": [ \"serial\" ], \"data\": [ { \"devDisplayName\": \"PORT 1\", \"id\": 1, \"dev\": \"/dev/ttyM0\", \"mode\": \"rs232\" } ], \"method\": \"get\" }",
-			json_object_get_string(j_task_id));
+    getSerial(resp, j_task_id);
 	}
 	else
 	{
 		printf("Undefined request: %s\n", (char*)message->payload);
 	}
 
-	//printf("PUB: %s\n", resp);
+	printf("PUB: %s\n", resp);
   char pub_topic[64];
-  printf("qos=%d\n", cfg->qos);
-  printf("retain=%d\n", cfg->retain);
-	int pub_len = strlen(resp);
-	snprintf(pub_topic, 64, "$ThingsPro/devices/%s/client", cfg->id);
-	int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, pub_len, resp, cfg->qos, cfg->retain);
+	snprintf(pub_topic, sizeof(pub_topic), "$ThingsPro/devices/%s/client", cfg->id);
+	int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, strlen(resp), resp, cfg->qos, cfg->retain);
 	if(rc) {
 		fprintf(stderr, "Error: Publish response(1) failed.\n");
 	}
+
+  free(resp);
 }
 
-void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg) {
-  printf("sub_connect_action\n");
+void send_online_event(struct mosquitto *mosq, struct mosq_config *cfg) {
   char pub_topic[64];
 	int mid_sent = 0;
 	int buf_len = 4;
 	char *buf;
 
-  printf("id=%s\n", cfg->id);
-  printf("qos=%d\n", cfg->qos);
-  printf("retain=%d\n", cfg->retain);
-
+  //payload
 	buf = malloc(buf_len);
 	bzero(buf, buf_len);
 	strcpy(buf, "1");
-	int pub_len = strlen(buf);
+
+  //topic
 	snprintf(pub_topic, 64, "$ThingsPro/devices/%s/status", cfg->id);
-	int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, pub_len, buf, cfg->qos, 1);
+	
+  //publish
+  int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, strlen(buf), buf, cfg->qos, cfg->retain);
 	if(rc) {
 		if(!cfg->quiet) fprintf(stderr, "Error: Publish notification failed.\n");
 	}
+
+  return;
+}
+
+void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg) {
+  printf("sub_connect_action\n");
+
+  //send_online_event(mosq, cfg);
 
   return;
 }
