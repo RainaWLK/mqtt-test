@@ -3,13 +3,12 @@ services:
   start:
     build: .
     container_name: "mosquitto"
-    #user: ""
     working_dir: /usr/src
     environment:
-      - LD_LIBRARY_PATH=/usr/src/lib/
+      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.5.4/lib/
+      - PATH=/usr/src/mosquitto-1.5.4/client/:$PATH
     volumes:
-      - ./mosquitto-1.5.4/:/usr/src/
-    #ports:
-    #  - "9000:9000"
-    command: "./test.sh"
+      - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
+      - ./python/:/usr/src/python/
+    command: "python3 ./python/run.py 3"
 

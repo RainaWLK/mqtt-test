@@ -4,3 +4,4 @@ mosquitto_pub
 mosquitto
 mosquitto_passwd
 *.so*
+__pycache__
