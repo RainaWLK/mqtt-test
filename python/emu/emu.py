@@ -31,7 +31,7 @@ def publish(MQTT_ELB, UUID, PSK):
     #print('pid {}: {}'.format(pid, i))
     command = "mosquitto_pub -d -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s'" % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
     subprocess.Popen(command, shell=True)
-    time.sleep(5)
+    time.sleep(random.randint(2, 10))
 
 
 def onexit():
