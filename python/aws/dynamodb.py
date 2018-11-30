@@ -18,3 +18,17 @@ def updateUUID(uuid, psk):
 
   print("UpdateItem succeeded:")
   print(json.dumps(response))
+
+def scan():
+  response = table.scan()
+  items = response['Items']
+  return items
+
+def deleteUUID(uuidList):
+  with table.batch_writer() as batch:
+    for uuid in uuidList:
+        batch.delete_item(
+          Key={
+            'uuid': uuid
+          }
+        )

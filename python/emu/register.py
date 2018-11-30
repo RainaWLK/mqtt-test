@@ -15,14 +15,15 @@ def genMac():
 
 
 def register():
-  url = os.environ.get('URL')
+  url = "{}/api/v1/devices".format(os.environ.get('URL'))
   headers = {
     'Content-Type': 'application/json',
     'MX-API-TOKEN': os.environ.get('TOKEN')
   }
+  mac = genMac()
   data = {
-    "mac": genMac(),
-    "displayName": "zzzz{}".format('mac'),
+    "mac": mac,
+    "displayName": "zzzz{}".format(mac),
     "description": "my test device",
     "serialNumber": str(int(time.time()))
   }
@@ -33,3 +34,20 @@ def register():
     print(resData)
     dynamodb.updateUUID(resData["uuid"], resData["psk"])
     return resData
+
+def deregister(data):
+  url = "{}/api/v1/devices".format(os.environ.get('URL'))
+  headers = {
+    'Content-Type': 'application/json',
+    'MX-API-TOKEN': os.environ.get('TOKEN')
+  }
+  print(url)
+  print(data)
+  r = requests.delete(url, headers=headers, data=json.dumps(data))
+  print(r)
+  if r.status_code == 200:
+    resData = r.text
+    print(resData)
+    dynamodb.deleteUUID(data)
+    return resData
+

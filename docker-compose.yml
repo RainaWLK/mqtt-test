@@ -12,6 +12,27 @@ services:
       - TOKEN=
       - AWS_ACCESS_KEY_ID=
       - AWS_SECRET_ACCESS_KEY=
+    #volumes:
+    #  - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
+    #  - ./python/:/usr/src/python/
+    command:
+        - /bin/bash
+        - -c
+        - |
+          python3 ./python/run.py 3
+
+  clean:
+    build: .
+    container_name: "mosquitto"
+    working_dir: /usr/src
+    environment:
+      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.5.4/lib/
+      - PATH=/usr/src/mosquitto-1.5.4/client/:$PATH
+      - URL=
+      - MQTT_URL=
+      - TOKEN=
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
     volumes:
       - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
       - ./python/:/usr/src/python/
@@ -19,5 +40,4 @@ services:
         - /bin/bash
         - -c
         - |
-          pip3 install -r requirements.txt
-          python3 ./python/run.py 3
+          python3 ./python/clean.py
