@@ -1,2 +1,7 @@
 requests
 boto3
+flask
+flask-sqlalchemy
+psycopg2
+psycopg2-binary
+sqlalchemy-utils
