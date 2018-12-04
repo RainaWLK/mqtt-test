@@ -156,6 +156,7 @@ void send_online_event(struct mosquitto *mosq, struct mosq_config *cfg) {
 
   //topic
 	snprintf(pub_topic, 64, "$ThingsPro/devices/%s/status", cfg->id);
+	printf("send online event:%s\n", pub_topic);
 	
   //publish
   int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, strlen(buf), buf, cfg->qos, cfg->retain);
@@ -167,9 +168,7 @@ void send_online_event(struct mosquitto *mosq, struct mosq_config *cfg) {
 }
 
 void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg) {
-  printf("sub_connect_action\n");
-
-  //send_online_event(mosq, cfg);
+  send_online_event(mosq, cfg);
 
   return;
 }

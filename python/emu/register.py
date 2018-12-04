@@ -28,12 +28,17 @@ def register():
     "serialNumber": str(int(time.time()))
   }
   print(data)
-  r = requests.post(url, headers=headers, data=json.dumps(data))
-  if r.status_code == 200:
-    resData = json.loads(r.text)
-    print(resData)
-    dynamodb.updateUUID(resData["uuid"], resData["psk"])
-    return resData
+  try:
+    r = requests.post(url, headers=headers, data=json.dumps(data))
+    if r.status_code == 200:
+      resData = json.loads(r.text)
+      print(resData)
+      dynamodb.updateUUID(resData["uuid"], resData["psk"])
+      return resData
+  except Exception as e:
+      print("{} register failed".format(mac))
+      print(e)
+      return
 
 def deregister(data):
   url = "{}/api/v1/devices".format(os.environ.get('URL'))
@@ -41,10 +46,7 @@ def deregister(data):
     'Content-Type': 'application/json',
     'MX-API-TOKEN': os.environ.get('TOKEN')
   }
-  print(url)
-  print(data)
   r = requests.delete(url, headers=headers, data=json.dumps(data))
-  print(r)
   if r.status_code == 200:
     resData = r.text
     print(resData)
