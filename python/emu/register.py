@@ -33,7 +33,7 @@ def register():
     if r.status_code == 200:
       resData = json.loads(r.text)
       print(resData)
-      dynamodb.updateUUID(resData["uuid"], resData["psk"])
+      #dynamodb.updateUUID(resData["uuid"], resData["psk"])
       return resData
   except Exception as e:
       print("{} register failed".format(mac))
@@ -50,6 +50,6 @@ def deregister(data):
   if r.status_code == 200:
     resData = r.text
     print(resData)
-    dynamodb.deleteUUID(data)
+    #dynamodb.deleteUUID(data)
     return resData
 

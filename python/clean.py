@@ -20,11 +20,12 @@ def flushDB(delete_items):
     uuids += "('{}'),".format(item["uuid"])
   uuids = uuids[:-1]
   #session.begin()
-  sql = text("CREATE TEMP TABLE tmp AS SELECT t.* FROM device t LEFT JOIN (values {}) d(uuid) ON t.uuid IS NULL".format(uuids))
-  print(sql)
+  #sql = text("CREATE TEMP TABLE tmp AS SELECT t.* FROM device t LEFT JOIN (values {}) d(uuid) ON t.uuid IS NULL".format(uuids))
+  #print(sql)
+  sql = text("DELETE FROM device WHERE mac LIKE \"03%\"")
   session.execute(sql)
-  session.execute("TRUNCATE device CASCADE;")
-  session.execute("INSERT INTO device SELECT * FROM tmp;")
+  #session.execute("TRUNCATE device CASCADE;")
+  #session.execute("INSERT INTO device SELECT * FROM tmp;")
   session.commit()
 
 
@@ -49,6 +50,6 @@ def main():
       #res = register.deregister(uuidList)
       uuidList = []
       #break
-      time.sleep(5)
+      time.sleep(0.5)
 
 main()

@@ -10,11 +10,18 @@ from emu import emu, register
 
 MQTT_URL = os.environ.get('MQTT_URL')
 
+def runEmu(cg):
+  print('----runEmu---')
+  emu.connect(MQTT_URL, cg["uuid"], cg["psk"])
+  print('----connect done---')
+  time.sleep(10)
+  print('----publish---')
+  emu.publish(MQTT_URL, cg["uuid"], cg["psk"])
+  
+
 def job():
   resData = register.register()
-  emu.connect(MQTT_URL, resData["uuid"], resData["psk"])
-  time.sleep(10)
-  emu.publish(MQTT_URL, resData["uuid"], resData["psk"])
+  runEmu(resData)
 
 
 if len(sys.argv) != 2:
