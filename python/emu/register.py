@@ -14,7 +14,7 @@ def genMac():
 
 
 
-def register():
+def register(seq):
   url = "{}/api/v1/devices".format(os.environ.get('URL'))
   headers = {
     'Content-Type': 'application/json',
@@ -33,7 +33,7 @@ def register():
     if r.status_code == 200:
       resData = json.loads(r.text)
       print(resData)
-      #dynamodb.updateUUID(resData["uuid"], resData["psk"])
+      dynamodb.updateUUID(seq, resData["uuid"], resData["psk"])
       return resData
   except Exception as e:
       print("{} register failed".format(mac))

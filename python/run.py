@@ -20,7 +20,7 @@ def runEmu(cg):
   
 
 def job():
-  resData = register.register()
+  #resData = register.register()
   runEmu(resData)
 
 

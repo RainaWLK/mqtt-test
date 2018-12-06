@@ -4,13 +4,17 @@ import json
 dynamodb = boto3.resource('dynamodb', region_name='us-west-1')
 table = dynamodb.Table('Devices')
 
-def updateUUID(uuid, psk):
+def updateUUID(seq, uuid, psk):
   response = table.update_item(
     Key={
-      'uuid': uuid
+      'id': seq
     },
-    UpdateExpression="set psk = :p",
+    UpdateExpression="set #u = :u, psk = :p",
+    ExpressionAttributeNames={
+      '#u': 'uuid'
+    },
     ExpressionAttributeValues={
+      ':u': uuid,
       ':p': psk
     },
     ReturnValues="UPDATED_NEW"
