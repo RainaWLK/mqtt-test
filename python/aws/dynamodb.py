@@ -36,3 +36,13 @@ def deleteUUID(uuidList):
             'uuid': uuid
           }
         )
+
+def getUUID(id):
+  response = table.get_item(
+    Key={
+      'id': id
+    }
+  )
+  item = response['Item']
+  print(item)
+  return item
