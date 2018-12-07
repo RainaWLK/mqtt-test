@@ -9,8 +9,10 @@ import random
 import atexit
 import threading
 import signal
+import psutil
 
-def runSub(MQTT_ELB, UUID, PSK):
+def runSub(MQTT_ELB, UUID, PSK, job_num):
+  print('runSub')
   while True:
     command = ["./mosquitto-1.5.4/client/mosquitto_sub",
     "-h",
@@ -34,10 +36,13 @@ def runSub(MQTT_ELB, UUID, PSK):
     proc = subprocess.Popen(command, shell=False)
     print(proc.pid)
     proc.wait()
-    checkAlive(proc.pid)
+    
+    #command = "./mosquitto-1.5.4/client/mosquitto_sub -h %s -p 8883 -c -i %s -t '$ThingsPro/devices/%s/server' --psk %s --psk-identity %s --will-topic '$ThingsPro/devices/%s/status' --will-retain --will-payload 0 &" % (MQTT_ELB, UUID, UUID, PSK, UUID, UUID)
+    #subprocess.Popen(command, shell=True)
+    checkAlive(job_num)
 
-def connect(MQTT_ELB, UUID, PSK):
-  thread = threading.Thread(target = runSub, args=(MQTT_ELB, UUID, PSK))
+def connect(MQTT_ELB, UUID, PSK, job_num):
+  thread = threading.Thread(target = runSub, args=(MQTT_ELB, UUID, PSK, job_num,))
   thread.start()
 
 def publish(MQTT_ELB, UUID, PSK):
@@ -56,11 +61,26 @@ def publish(MQTT_ELB, UUID, PSK):
     data['data'] = route[random.randint(0, len(route) - 1)]
 
     #print('pid {}: {}'.format(pid, i))
-    command = "mosquitto_pub -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s' " % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
+    command = "./mosquitto-1.5.4/client/mosquitto_pub -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s' " % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
     subprocess.Popen(command, shell=True)
     time.sleep(random.randint(20, 100))
 
-def checkAlive(pid):
+def checkAlive(job_num):
+  print('checkAlive')
+  while True:
+    time.sleep(10)
+    count = 0
+    print('checkAlive loop')
+    for proc in psutil.process_iter():
+      print(proc.name())
+      if proc.name() == "mosquitto_sub":
+        count = count + 1
+
+    print(count)
+    if(count < int(job_num)):
+      break
+
+  """
   while True:
     time.sleep(10)
     try:
@@ -73,7 +93,7 @@ def checkAlive(pid):
     if p == 1:
       os.kill(pid, signal.SIGNAL_SIGTERM)
       break
-
+  """
 
 def onexit():
   command = "ps aux | grep mosquitto_sub | awk '{print $2}' | xargs kill"

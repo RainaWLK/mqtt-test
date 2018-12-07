@@ -10,18 +10,18 @@ from emu import emu, register
 
 MQTT_URL = os.environ.get('MQTT_URL')
 
-def runEmu(cg):
+def runEmu(cg, job_num):
   print('----runEmu---')
-  emu.connect(MQTT_URL, cg["uuid"], cg["psk"])
+  emu.connect(MQTT_URL, cg["uuid"], cg["psk"], job_num)
   print('----connect done---')
   time.sleep(10)
   print('----publish---')
   emu.publish(MQTT_URL, cg["uuid"], cg["psk"])
   
 
-def job():
+def myjob(job_num):
   resData = register.getUUID()
-  runEmu(resData)
+  runEmu(resData, job_num)
 
 
 if len(sys.argv) != 2:
@@ -30,7 +30,8 @@ if len(sys.argv) != 2:
 
 threads = []
 for i in range(int(sys.argv[1])):
-  threads.append(threading.Thread(target = job))
+  print(sys.argv[1])
+  threads.append(threading.Thread(target = myjob, args=(sys.argv[1],)))
   threads[i].start()
   time.sleep(random.uniform(0, 10))
 
