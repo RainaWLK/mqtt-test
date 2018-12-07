@@ -13,7 +13,6 @@ import signal
 def runSub(MQTT_ELB, UUID, PSK):
   while True:
     command = ["./mosquitto-1.5.4/client/mosquitto_sub",
-    "-d",
     "-h",
     "{}".format(MQTT_ELB),
     "-p",
@@ -57,21 +56,20 @@ def publish(MQTT_ELB, UUID, PSK):
     data['data'] = route[random.randint(0, len(route) - 1)]
 
     #print('pid {}: {}'.format(pid, i))
-    command = "mosquitto_pub -d -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s' " % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
+    command = "mosquitto_pub -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s' " % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
     subprocess.Popen(command, shell=True)
-    time.sleep(random.randint(2, 10))
+    time.sleep(random.randint(20, 100))
 
 def checkAlive(pid):
   while True:
+    time.sleep(10)
     try:
       os.kill(pid, 0)
     except OSError:
       break
-    else:
-      time.sleep(10)
     
     #random disconnect emulation
-    p = random.randint(0, 1)
+    p = random.randint(0, 1000)
     if p == 1:
       os.kill(pid, signal.SIGNAL_SIGTERM)
       break
