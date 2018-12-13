@@ -12,7 +12,7 @@ import signal
 import psutil
 
 def runSub(MQTT_ELB, UUID, PSK, job_num):
-  print('runSub')
+  print('runSub: {}'.format(UUID))
   while True:
     command = ["./mosquitto-1.5.4/client/mosquitto_sub",
     "-h",
@@ -28,6 +28,8 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
     "{}".format(PSK),
     "--psk-identity",
     "{}".format(UUID),
+    "-q",
+    "2",
     "--will-topic",
     "$ThingsPro/devices/{}/status".format(UUID),
     "--will-retain",

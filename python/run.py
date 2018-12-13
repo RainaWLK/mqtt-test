@@ -20,6 +20,7 @@ def runEmu(cg, job_num):
   
 
 def myjob(job_num):
+  time.sleep(random.uniform(0, 600))
   resData = register.getUUID()
   runEmu(resData, job_num)
 
@@ -30,8 +31,6 @@ if len(sys.argv) != 2:
 
 threads = []
 for i in range(int(sys.argv[1])):
-  print(sys.argv[1])
   threads.append(threading.Thread(target = myjob, args=(sys.argv[1],)))
   threads[i].start()
-  time.sleep(random.uniform(0, 10))
 
