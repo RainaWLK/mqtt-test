@@ -20,7 +20,7 @@ def runEmu(cg, job_num):
   
 
 def myjob(job_num):
-  time.sleep(random.uniform(0, 600))
+  time.sleep(random.uniform(0, 1800))
   resData = register.getUUID()
   runEmu(resData, job_num)
 
