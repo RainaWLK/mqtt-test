@@ -44,5 +44,4 @@ def getUUID(id):
     }
   )
   item = response['Item']
-  print(item)
   return item
