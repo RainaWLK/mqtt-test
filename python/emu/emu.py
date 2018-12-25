@@ -16,12 +16,10 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
   while True:
     logging.debug('runSub: {}'.format(UUID))
     command = ["./mosquitto-1.5.4/client/mosquitto_sub",
-    #"-d",
     "-h",
     "{}".format(MQTT_ELB),
     "-p",
     "8883",
-    #"-c",     # don't disable clean session in mass test
     "-i",
     "{}".format(UUID),
     "-t",
@@ -40,6 +38,8 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
     proc = subprocess.Popen(command, shell=False)
     logging.debug(proc.pid)
     proc.wait()
+    if os.environ.get('ENV') != 'dev':
+      command.append("-d")
     
     #command = "./mosquitto-1.5.4/client/mosquitto_sub -h %s -p 8883 -c -i %s -t '$ThingsPro/devices/%s/server' --psk %s --psk-identity %s --will-topic '$ThingsPro/devices/%s/status' --will-retain --will-payload 0 &" % (MQTT_ELB, UUID, UUID, PSK, UUID, UUID)
     #subprocess.Popen(command, shell=True)
@@ -75,8 +75,12 @@ def checkAlive(job_num):
     count = 0
     for proc in psutil.process_iter():
       #logging.debug(proc.name())
-      if proc.name() == "mosquitto_sub":
-        count = count + 1
+      try:
+        if proc.name() == "mosquitto_sub":
+          count = count + 1
+      except:
+        #do nothing
+        continue
 
     logging.debug("proc count={}".format(count))
     if(count < int(job_num)):

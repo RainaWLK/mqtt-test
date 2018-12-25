@@ -3,6 +3,7 @@ import requests
 import time
 import random
 import json
+import logging
 from aws import dynamodb
 
 def genMac():
