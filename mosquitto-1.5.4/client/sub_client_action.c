@@ -72,12 +72,13 @@ void getFirmware(char *resp, struct json_object *j_task_id) {
 
 
 void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mosquitto_message *message) {
-  printf("sub_action\n");
-
-	printf("\n%s ", message->topic);
-	fwrite(message->payload, 1, message->payloadlen, stdout);
-	printf("\n");
-	fflush(stdout);
+	if(cfg->debug) {
+		printf("sub_action\n");
+		printf("\n%s ", message->topic);
+		fwrite(message->payload, 1, message->payloadlen, stdout);
+		printf("\n");
+		fflush(stdout);
+	}
 
   char *resp = calloc(PAYLOAD_SIZE, sizeof(char));
   //char dev_name[24];
@@ -132,7 +133,9 @@ void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mo
 		printf("Undefined request: %s\n", (char*)message->payload);
 	}
 
-	printf("PUB: %s\n", resp);
+	if(cfg->debug) {
+		printf("PUB: %s\n", resp);
+	}
   char pub_topic[64];
 	snprintf(pub_topic, sizeof(pub_topic), "$ThingsPro/devices/%s/client", cfg->id);
 	int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, strlen(resp), resp, cfg->qos, cfg->retain);
@@ -156,7 +159,9 @@ void send_online_event(struct mosquitto *mosq, struct mosq_config *cfg) {
 
   //topic
 	snprintf(pub_topic, 64, "$ThingsPro/devices/%s/status", cfg->id);
-	printf("send online event:%s\n", pub_topic);
+	if(cfg->debug) {
+		printf("send online event:%s\n", pub_topic);
+	}
 	
   //publish
   int rc = mosquitto_publish(mosq, &mid_sent, pub_topic, strlen(buf), buf, cfg->qos, cfg->retain);

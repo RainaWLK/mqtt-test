@@ -79,7 +79,9 @@ void my_message_callback(struct mosquitto *mosq, void *obj, const struct mosquit
 	}
 
 	sub_action(mosq, cfg, message);
-	print_message(cfg, message);
+	if(cfg->debug) {
+		print_message(cfg, message);
+	}
 
 	if(cfg->msg_count>0){
 		msg_count++;

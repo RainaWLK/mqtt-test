@@ -4,6 +4,7 @@ import time
 import random
 import json
 import logging
+#from aws import cloudwatch
 
 uuidList = []
 
@@ -22,11 +23,11 @@ def remoteGet(uuid):
   }
 
   try:
-    logging.debug('--remote GET /devices/{}/settings/serial'.format(uuid))
+    logging.debug('--remote GET {}/system/properties'.format(uuid))
     r = requests.post(url, headers=headers, data=json.dumps(body))
     if r.status_code == 200:
       resData = json.loads(r.text)
-      #logging.debug(resData)
+      logging.debug(resData)
       return 200
   except Exception as e:
       logging.debug("{} get failed".format(uuid))
@@ -55,6 +56,9 @@ def run():
       time.sleep(1)
     #report (use ERROR to force output)
     try:
-      logging.error("remote test successed: {} / {} , avg {} ms".format(counter, len(uuidList), time_usage*1000/len(uuidList)))
+      num = len(uuidList)
+      if num > 0:
+        logging.error("remote test successed: {} / {} , avg {} ms".format(counter, num, time_usage*1000/num))
+        #cloudwatch.put_log_events("remote test successed: {} / {} , avg {} ms".format(counter, len(uuidList), time_usage*1000/len(uuidList)))
     except Exception as e:
       logging.error(e)
