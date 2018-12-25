@@ -44,11 +44,17 @@ def run():
   while True:
     time.sleep(20)
     counter = 0
+    time_usage = 0
     #logging.debug(uuidList)
     for uuid in uuidList:
+      start = time.time()
       statusCode = remoteGet(uuid)
+      time_usage += time.time() - start
       if statusCode == 200:
         counter += 1
       time.sleep(1)
     #report (use ERROR to force output)
-    logging.ERROR("remote test successed: {} / {}".format(counter, len(uuidList)))
+    try:
+      logging.error("remote test successed: {} / {} , avg {} ms".format(counter, len(uuidList), time_usage*1000/len(uuidList)))
+    except Exception as e:
+      logging.error(e)
