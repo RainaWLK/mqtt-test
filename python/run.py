@@ -8,6 +8,7 @@ import logging
 import random
 import threading
 from emu import emu, register
+from rest import rest
 
 if os.environ.get('ENV') == 'dev':
   logging.basicConfig(level=logging.DEBUG)
@@ -21,13 +22,18 @@ def runEmu(cg, job_num):
   emu.connect(MQTT_URL, cg["uuid"], cg["psk"], job_num)
   logging.debug('----connect done---')
   time.sleep(10)
+  rest.addList(cg["uuid"])
   logging.debug('----publish---')
   emu.publish(MQTT_URL, cg["uuid"], cg["psk"])
-  
+
+def runRemoteTest():
+  rest.run()
 
 def myjob(job_num):
   if os.environ.get('ENV') != 'dev':
     time.sleep(random.uniform(0, 3600))
+  else:
+    time.sleep(0.5)
   resData = register.getUUID()
   runEmu(resData, job_num)
 
@@ -41,5 +47,8 @@ for i in range(int(sys.argv[1])):
   threads.append(threading.Thread(target = myjob, args=(sys.argv[1],)))
   threads[i].start()
 
+
+restThread = threading.Thread(target = runRemoteTest)
+restThread.start()
 
 #myjob(1)
