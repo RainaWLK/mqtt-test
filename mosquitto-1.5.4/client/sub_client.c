@@ -43,6 +43,7 @@ void my_signal_handler(int signum)
 {
 	if(signum == SIGALRM){
 		process_messages = false;
+		printf("my_signal_handler mosquitto_disconnect\n");
 		mosquitto_disconnect(mosq);
 	}
 }
@@ -64,6 +65,7 @@ void my_message_callback(struct mosquitto *mosq, void *obj, const struct mosquit
 
 	if(cfg->retained_only && !message->retain && process_messages){
 		process_messages = false;
+		printf("my_message_callback mosquitto_disconnect\n");
 		mosquitto_disconnect(mosq);
 		return;
 	}
@@ -83,7 +85,9 @@ void my_message_callback(struct mosquitto *mosq, void *obj, const struct mosquit
 		msg_count++;
 		if(cfg->msg_count == msg_count){
 			process_messages = false;
+			printf("my_message_callback mosquitto_disconnect 2\n");
 			mosquitto_disconnect(mosq);
+			sub_disconnect_action();
 		}
 	}
 }
@@ -103,13 +107,17 @@ void my_connect_callback(struct mosquitto *mosq, void *obj, int result, int flag
 			sub_connect_action(mosq, cfg);
 		}
 		for(i=0; i<cfg->unsub_topic_count; i++){
+			printf("my_connect_callback mosquitto_unsubscribe\n");
 			mosquitto_unsubscribe(mosq, NULL, cfg->unsub_topics[i]);
+			sub_disconnect_action();
 		}
 	}else{
 		if(result && !cfg->quiet){
 			fprintf(stderr, "%s\n", mosquitto_connack_string(result));
 		}
+		printf("my_connect_callback mosquitto_disconnect\n");
 		mosquitto_disconnect(mosq);
+		sub_disconnect_action();
 	}
 
 	

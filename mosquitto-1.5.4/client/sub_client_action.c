@@ -167,8 +167,17 @@ void send_online_event(struct mosquitto *mosq, struct mosq_config *cfg) {
   return;
 }
 
-void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg) {
-  send_online_event(mosq, cfg);
+int connected = 0;
 
+void sub_connect_action(struct mosquitto *mosq, struct mosq_config *cfg) {
+	if(connected == 0) {
+		connected = 1;
+  	send_online_event(mosq, cfg);
+	}
+  return;
+}
+
+void sub_disconnect_action() {
+	connected = 0;
   return;
 }
