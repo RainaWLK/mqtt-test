@@ -54,7 +54,13 @@ def deregister(data):
     #dynamodb.deleteUUID(data)
     return resData
 
-def getUUID():
-  id = random.randint(0, 50000)
-  resData = dynamodb.getUUID(id)
+def getUUID(num):
+  idList = []
+  for i in range(0, num):
+    id = random.randint(0, 50000)
+    while id in idList:
+      id = random.randint(0, 50000)
+    idList.append(id)
+
+  resData = dynamodb.getUUIDs(idList)
   return resData

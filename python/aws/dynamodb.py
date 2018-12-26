@@ -1,8 +1,12 @@
 import boto3
 import json
+import logging
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-1')
-table = dynamodb.Table('Devices')
+
+TABLE_NAME = 'Devices'
+table = dynamodb.Table(TABLE_NAME)
+
 
 def updateUUID(seq, uuid, psk):
   response = table.update_item(
@@ -45,3 +49,41 @@ def getUUID(id):
   )
   item = response['Item']
   return item
+
+def sendBatchRead(para):
+  try:
+    response = dynamodb.batch_get_item(
+      RequestItems=para,
+      ReturnConsumedCapacity='NONE'
+    )
+    return response['Responses']
+  except Exception as e:
+    logging.error(e)
+
+def getUUIDs(idList):
+  counter = 0
+  queryString = {
+    'Devices': {
+      'Keys': [],
+      'ConsistentRead': False
+    }
+  }
+  output = []
+  for id in idList:
+    key = {
+      'id': id
+    }
+    queryString[TABLE_NAME]['Keys'].append(key)
+    counter += 1
+
+    if counter >= 100:
+      res = sendBatchRead(queryString)
+      output += res[TABLE_NAME]
+      counter = 0
+      queryString[TABLE_NAME]['Keys'] = []
+
+  if counter > 0:
+    res = sendBatchRead(queryString)
+    output += res[TABLE_NAME]
+
+  return output

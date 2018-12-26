@@ -43,19 +43,19 @@ def resetList():
 
 def run():
   while True:
-    time.sleep(20)
-    counter = 0
-    time_usage = 0
-    #logging.debug(uuidList)
-    for uuid in uuidList:
-      start = time.time()
-      statusCode = remoteGet(uuid)
-      time_usage += time.time() - start
-      if statusCode == 200:
-        counter += 1
-      time.sleep(1)
-    #report (use ERROR to force output)
     try:
+      time.sleep(600)
+      counter = 0
+      time_usage = 0
+      #logging.debug(uuidList)
+      for uuid in uuidList:
+        start = time.time()
+        statusCode = remoteGet(uuid)
+        time_usage += time.time() - start
+        if statusCode == 200:
+          counter += 1
+        time.sleep(1)
+      #report (use ERROR to force output)
       num = len(uuidList)
       if num > 0:
         logging.error("remote test successed: {} / {} , avg {} ms".format(counter, num, time_usage*1000/num))

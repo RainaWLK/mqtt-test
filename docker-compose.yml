@@ -14,7 +14,6 @@ services:
       - AWS_SECRET_ACCESS_KEY=
       - ENV=dev
     volumes:
-    #  - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
       - ./python/:/usr/src/python/
     command:
         - /bin/bash
@@ -27,8 +26,8 @@ services:
     container_name: "mosquitto"
     working_dir: /usr/src
     environment:
-      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.5.4/lib/
-      - PATH=/usr/src/mosquitto-1.5.4/client/:$PATH
+      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.4.14_mx/lib/
+      - PATH=/usr/src/mosquitto-1.4.14_mx/client/:$PATH
       - URL=
       - MQTT_URL=
       - TOKEN=
@@ -36,7 +35,6 @@ services:
       - AWS_ACCESS_KEY_ID=
       - AWS_SECRET_ACCESS_KEY=
     volumes:
-      - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
       - ./python/:/usr/src/python/
     command:
         - /bin/bash
@@ -49,8 +47,8 @@ services:
     container_name: "mosquitto"
     working_dir: /usr/src
     environment:
-      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.5.4/lib/
-      - PATH=/usr/src/mosquitto-1.5.4/client/:$PATH
+      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.4.14_mx/lib/
+      - PATH=/usr/src/mosquitto-1.4.14_mx/client/:$PATH
       - URL=
       - MQTT_URL=
       - TOKEN=
@@ -58,7 +56,7 @@ services:
       - AWS_ACCESS_KEY_ID=
       - AWS_SECRET_ACCESS_KEY=
     volumes:
-      - ./mosquitto-1.5.4/:/usr/src/mosquitto-1.5.4/
+      - ./mosquitto-1.4.14_mx/:/usr/src/mosquitto-1.4.14_mx/
       - ./python/:/usr/src/python/
     command:
         - /bin/bash
