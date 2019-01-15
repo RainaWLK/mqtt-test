@@ -35,6 +35,9 @@ def myjob(cg, job_num):
   else:
     time.sleep(1)
   #resData = register.getUUID()
+  # bug: psk issue
+  #cg["uuid"] = "94bea896-659a-42fd-b443-f30dadbd0582"
+  #cg["psk"] = "00eab55719659e289957f3274b710c9a2ca76db489d884b3cf155fe55307f60e"
   runEmu(cg, job_num)
 
 if len(sys.argv) != 2:
@@ -43,7 +46,7 @@ if len(sys.argv) != 2:
 
 threads = []
 cgList = register.getUUID(int(sys.argv[1]))
-for i in range(int(sys.argv[1])):
+for i in range(len(cgList)):
   threads.append(threading.Thread(target = myjob, args=(cgList[i], sys.argv[1],)))
   threads[i].start()
 

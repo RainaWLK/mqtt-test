@@ -36,7 +36,7 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
     "--will-payload",
     "0"]
     proc = subprocess.Popen(command, shell=False)
-    logging.debug(proc.pid)
+    #logging.debug(proc.pid)
     proc.wait()
     if os.environ.get('ENV') != 'dev':
       command.append("-d")
