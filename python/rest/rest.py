@@ -54,7 +54,7 @@ def run():
         time_usage += time.time() - start
         if statusCode == 200:
           counter += 1
-        time.sleep(1)
+        #time.sleep(1)
       #report (use ERROR to force output)
       num = len(uuidList)
       if num > 0:
