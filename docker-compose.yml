@@ -21,6 +21,28 @@ services:
         - |
           python3 ./python/run.py 1
 
+  tls-start:
+    build: .
+    container_name: "mosquitto"
+    working_dir: /usr/src
+    environment:
+      - LD_LIBRARY_PATH=/usr/src/mosquitto-1.5.4/lib/
+      - PATH=/usr/src/mosquitto-1.5.4/client/:$PATH
+      - URL=
+      - MQTT_URL=
+      - TOKEN=
+      - AWS_ACCESS_KEY_ID=
+      - AWS_SECRET_ACCESS_KEY=
+      - TLS=true
+      - ENV=dev
+    volumes:
+      - ./python/:/usr/src/python/
+    command:
+        - /bin/bash
+        - -c
+        - |
+          python3 ./python/run.py 1
+
   mass:
     build: .
     container_name: "mosquitto"

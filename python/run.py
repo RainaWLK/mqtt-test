@@ -31,13 +31,15 @@ def runRemoteTest():
 
 def myjob(cg, job_num):
   if os.environ.get('ENV') != 'dev':
-    time.sleep(random.uniform(0, 3600))
+    time.sleep(random.uniform(0, 1800))
   else:
     time.sleep(1)
   #resData = register.getUUID()
   # bug: psk issue
-  #cg["uuid"] = "94bea896-659a-42fd-b443-f30dadbd0582"
-  #cg["psk"] = "00eab55719659e289957f3274b710c9a2ca76db489d884b3cf155fe55307f60e"
+  #cg["uuid"] = "f6d1e0ac-066e-4856-9cd9-c7940728f5ee"
+  #cg["psk"] = "2b7e7e8b322c1ae61467de9e406c609f7e1d46b3bdff7406e60e996a3922be68"
+  #cg["uuid"] = "866b037d-d090-417e-9b3e-1942a9bb93b4"
+  #cg["psk"] = "001d1cf797770f1d896369c56d3965dd6ab09e4498ac452670d980598805d744"
   runEmu(cg, job_num)
 
 if len(sys.argv) != 2:

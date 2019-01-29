@@ -33,12 +33,12 @@ void getProperties(char *resp, struct json_object *j_task_id, struct mosq_config
   char dev_name[24];
   char dev_mac[24];
   int dev_gps_lat=0, dev_gps_lng=0;
-	snprintf(dev_name, 24, "%s-%s", "UC-8112-LX", cfg->psk+58);
+	snprintf(dev_name, 24, "%s-%s", "UC-8112-LX", cfg->id+30);
 	snprintf(dev_mac, 24, "%s:%c%c:%c%c", "00:90:E8",
-			cfg->psk[60], cfg->psk[61], cfg->psk[62], cfg->psk[63]);
+			cfg->id[32], cfg->id[34], cfg->id[35], cfg->id[36]);
 
-	dev_gps_lat = -80 + (int)strtol(cfg->psk+58, NULL, 16)/361;
-	dev_gps_lng = -180 + (int)strtol(cfg->psk+58, NULL, 16)%361;
+	dev_gps_lat = -80 + (int)strtol(cfg->id+30, NULL, 16)/361;
+	dev_gps_lng = -180 + (int)strtol(cfg->id+30, NULL, 16)%361;
 
 
   snprintf(resp, PAYLOAD_SIZE, 
@@ -74,7 +74,7 @@ void getFirmware(char *resp, struct json_object *j_task_id) {
 void sub_action(struct mosquitto *mosq, struct mosq_config *cfg, const struct mosquitto_message *message) {
 	if(cfg->debug) {
 		printf("sub_action\n");
-		printf("\n%s ", message->topic);
+		printf("%s\n", message->topic);
 		fwrite(message->payload, 1, message->payloadlen, stdout);
 		printf("\n");
 		fflush(stdout);

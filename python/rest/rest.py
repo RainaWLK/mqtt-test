@@ -32,6 +32,7 @@ def remoteGet(uuid):
   except Exception as e:
       logging.debug("{} get failed".format(uuid))
       logging.debug(e)
+      time.sleep(1)
       return None
 
 def addList(uuid):
@@ -44,7 +45,10 @@ def resetList():
 def run():
   while True:
     try:
-      time.sleep(600)
+      if os.environ.get('ENV') == 'dev':
+        time.sleep(6)
+      else:
+        time.sleep(600)
       counter = 0
       time_usage = 0
       #logging.debug(uuidList)
@@ -54,7 +58,6 @@ def run():
         time_usage += time.time() - start
         if statusCode == 200:
           counter += 1
-        #time.sleep(1)
       #report (use ERROR to force output)
       num = len(uuidList)
       if num > 0:

@@ -24,10 +24,12 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
     "{}".format(UUID),
     "-t",
     "$ThingsPro/devices/{}/server".format(UUID), 
-    "--psk",
-    "{}".format(PSK),
-    "--psk-identity",
-    "{}".format(UUID),
+    #"--psk",
+    #"{}".format(PSK),
+    #"--psk-identity",
+    #"{}".format(UUID),
+    #"--cafile",
+    #"./python/rootca.pem",
     "-q",
     "2",
     "--will-topic",
@@ -35,11 +37,19 @@ def runSub(MQTT_ELB, UUID, PSK, job_num):
     "--will-retain",
     "--will-payload",
     "0"]
+    if os.environ.get('TLS') == 'true':
+      #logging.debug('TLS')
+      command.extend(["--cafile", "./python/rootca.pem"])
+    else:
+      #logging.debug('PSK')
+      command.extend(["--psk", "{}".format(PSK), "--psk-identity", "{}".format(UUID)])
+
+    #if os.environ.get('ENV') == 'dev':
+    #  command.append("-d")
+
     proc = subprocess.Popen(command, shell=False)
     #logging.debug(proc.pid)
     proc.wait()
-    if os.environ.get('ENV') != 'dev':
-      command.append("-d")
     
     #command = "./mosquitto-1.5.4/client/mosquitto_sub -h %s -p 8883 -c -i %s -t '$ThingsPro/devices/%s/server' --psk %s --psk-identity %s --will-topic '$ThingsPro/devices/%s/status' --will-retain --will-payload 0 &" % (MQTT_ELB, UUID, UUID, PSK, UUID, UUID)
     #subprocess.Popen(command, shell=True)
@@ -60,12 +70,20 @@ def publish(MQTT_ELB, UUID, PSK):
 
   route = ['eth0', 'wwan0', 'wlan0']
 
+  tls = ""
+  if os.environ.get('TLS') == 'true':
+    #logging.debug('TLS')
+    tls = '--cafile ./python/rootca.pem'
+  else:
+    #logging.debug('PSK')
+    tls = "--psk '{}' --psk-identity '{}'".format(PSK, UUID)
+
   while True:
     TOPIC = '$ThingsPro/devices/{}/client'.format(UUID)
     data['data'] = route[random.randint(0, len(route) - 1)]
 
     #print('pid {}: {}'.format(pid, i))
-    command = "./mosquitto-1.5.4/client/mosquitto_pub -h %s -p 8883 -t '%s' --psk '%s' --psk-identity '%s' -q 2 -m '%s' " % (MQTT_ELB, TOPIC, PSK, UUID, json.dumps(data))
+    command = "./mosquitto-1.5.4/client/mosquitto_pub -h %s -p 8883 -t '%s' %s -q 2 -m '%s' " % (MQTT_ELB, TOPIC, tls, json.dumps(data))
     subprocess.Popen(command, shell=True)
     time.sleep(random.randint(120, 1800))
 
