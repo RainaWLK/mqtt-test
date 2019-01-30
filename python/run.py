@@ -40,6 +40,14 @@ def myjob(cg, job_num):
   #cg["psk"] = "2b7e7e8b322c1ae61467de9e406c609f7e1d46b3bdff7406e60e996a3922be68"
   #cg["uuid"] = "866b037d-d090-417e-9b3e-1942a9bb93b4"
   #cg["psk"] = "001d1cf797770f1d896369c56d3965dd6ab09e4498ac452670d980598805d744"
+  UUID=cg["uuid"]
+  UUID_HEAD = UUID[0:24]
+  UUID_TAIL = UUID[24:36]
+  uuid_tail_int = int(UUID_TAIL, 16)
+  time_diff = int(time.time()*10000 % 100000)
+  uuid_tail = str(hex(uuid_tail_int+time_diff))[2:]
+  uuid_time = UUID_HEAD + uuid_tail
+  cg["uuid"] = uuid_time
   runEmu(cg, job_num)
 
 if len(sys.argv) != 2:
