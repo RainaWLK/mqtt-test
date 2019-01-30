@@ -1,6 +1,7 @@
 import boto3
 import json
 import logging
+import time
 
 dynamodb = boto3.resource('dynamodb', region_name='us-west-1')
 
@@ -51,14 +52,20 @@ def getUUID(id):
   return item
 
 def sendBatchRead(para):
-  try:
-    response = dynamodb.batch_get_item(
-      RequestItems=para,
-      ReturnConsumedCapacity='NONE'
-    )
-    return response['Responses']
-  except Exception as e:
-    logging.error(e)
+  counter = 0
+
+  while True:
+    try:
+      response = dynamodb.batch_get_item(
+        RequestItems=para,
+        ReturnConsumedCapacity='NONE'
+      )
+      return response['Responses']
+    except Exception as e:
+      logging.error(e)
+      counter = counter + 1
+      time.sleep(60)
+      logging.info("try again: {}".format(counter))
 
 def getUUIDs(idList):
   counter = 0
