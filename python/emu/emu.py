@@ -89,7 +89,7 @@ def publish(MQTT_ELB, UUID, PSK):
 
 def checkAlive(job_num):
   while True:
-    time.sleep(10)
+    time.sleep(random.uniform(10, 300))
     count = 0
     for proc in psutil.process_iter():
       #logging.debug(proc.name())

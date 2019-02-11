@@ -46,6 +46,9 @@ def myjob(cg, job_num):
   uuid_tail_int = int(UUID_TAIL, 16)
   time_diff = int(time.time()*10000 % 100000)
   uuid_tail = str(hex(uuid_tail_int+time_diff))[2:]
+  if(len(uuid_tail) < 12):
+    while(len(uuid_tail) < 12):
+      uuid_tail = '0'+uuid_tail
   uuid_time = UUID_HEAD + uuid_tail
   cg["uuid"] = uuid_time
   runEmu(cg, job_num)
